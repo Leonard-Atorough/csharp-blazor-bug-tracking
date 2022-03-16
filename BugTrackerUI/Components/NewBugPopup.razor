@@ -1,0 +1,66 @@
+﻿@if (ShowPopup)
+{
+    <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>Add New Bug</h3>
+                    <a class="btn btn-outline-primary" @onclick="@Close">Close</a>
+                    <br/>
+                    <br/>
+                    <EditForm Model="AddBug" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <InputText @bind-Value="@AddBug.Title" placeholder="Enter Title"></InputText>
+                        <br />
+                        <InputText @bind-Value="@AddBug.Description" placeholder="Enter Description"></InputText>
+                        <br />
+                        <InputNumber @bind-Value="@AddBug.Priority" placeholder="Enter Priority"></InputNumber>
+                        <br />
+                        <br />
+                        <button type="submit" class="btn btn-primary">Add Bug</button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    public Bug AddBug { get; set; } = new Bug();
+    [Inject]
+    public IBugService BugService { get; set; }
+    [Inject]
+    public NavigationManager NavService { get; set; }
+    public bool ShowPopup { get; set; }
+    [Parameter]
+    public EventCallback<bool> CloseEventCallback { get; set; }
+
+    protected async Task HandleValidSubmit()
+    {
+        BugService.AddBug(AddBug);
+        ShowPopup = false;
+        await CloseEventCallback.InvokeAsync(true);
+        StateHasChanged();
+
+    }
+
+    public void Show()
+    {
+        ResetPopup();
+        ShowPopup = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ShowPopup = false;
+        StateHasChanged();
+    }
+
+    public void ResetPopup()
+    {
+        AddBug = new Bug();
+    }
+}

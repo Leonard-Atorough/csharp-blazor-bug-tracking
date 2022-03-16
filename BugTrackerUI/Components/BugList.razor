@@ -20,13 +20,28 @@
     }
 </table>
 
+<button class="=btn btn-primary" @onclick="QuickAddBug">Add Bug</button>
+<NewBugPopup @ref="NewBugPopup" CloseEventCallback="NewBugPopup_OnDialogClose"></NewBugPopup>
+
 @code {
     [Inject]
     public IBugService BugService { get; set; }
     public List<Bug> Bugs { get; set; }
+    protected NewBugPopup NewBugPopup { get; set; }
 
     protected override void OnInitialized()
     {
         Bugs = BugService.GetBugs().OrderBy(x => x.Priority).ToList();
+    }
+
+    public void QuickAddBug()
+    {
+        NewBugPopup.Show();
+    }
+
+    public void NewBugPopup_OnDialogClose()
+    {
+        Bugs = BugService.GetBugs().OrderBy(x => x.Priority).ToList();
+        StateHasChanged();
     }
 }
